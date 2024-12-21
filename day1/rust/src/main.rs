@@ -1,26 +1,27 @@
 use std::{
     fs::File,
-    io::{self, BufRead, Read},
+    io::{self, BufRead},
 };
+
+struct FileContents {
+    lines: Vec<Vec<i32>>,
+}
 
 fn main() -> Result<(), std::io::Error> {
     let path = "/home/alex/dev/advent-of-code-2024/day1/rust/puzzle-input.txt";
 
-    let mut file = File::open(path)?;
-    let mut contents = String::new();
+    let file_lines = read_lines(path)?;
 
-    file.read_to_string(&mut contents)?;
-    println!("Contents of the file: {}", contents);
+    let lines: Vec<Vec<i32>> = file_lines
+        .filter_map(Result::ok)
+        .map(|line| {
+            line.split_whitespace()
+                .filter_map(|s| s.parse::<i32>().ok())
+                .collect()
+        })
+        .collect();
 
-    if let Ok(lines) = read_lines(path) {
-        let mut counter = 0;
-        for line in lines {
-            if let Ok(ip) = line {
-                counter += 1;
-                println!("line {}: {}", counter, ip);
-            }
-        }
-    }
+    let file_contents = FileContents { lines };
 
     Ok(())
 }
